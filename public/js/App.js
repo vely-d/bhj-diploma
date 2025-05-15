@@ -20,6 +20,8 @@ class App {
     Sidebar.init();
 
     this.initUser();
+
+    // this.getWidget("transactions").registerEvents();
   }
 
   /**

@@ -12,7 +12,10 @@ class UserWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor(element){
-
+    if(!document.body.contains(element)) {
+      throw new Error("Can not create user widget: there is no such element");
+    }
+    this.element = element;
   }
 
   /**
@@ -23,6 +26,9 @@ class UserWidget {
    * авторизованного пользователя
    * */
   update(){
-
+    let name = User.current().name;
+    if(name) {
+      document.querySelector(".user-name").textContent = name;
+    }
   }
 }

@@ -11,14 +11,19 @@ class TransactionsPage {
    * через registerEvents()
    * */
   constructor( element ) {
-
+    if(!document.body.contains(element)) {
+      throw new Error("Can not create transactions page: there is no such element");
+    }
+    this.element = element;
+    this.registerEvents();
+    this.lastOptions = null;
   }
 
   /**
    * Вызывает метод render для отрисовки страницы
    * */
   update() {
-
+    this.render(this.lastOptions);
   }
 
   /**
@@ -61,7 +66,36 @@ class TransactionsPage {
    * в TransactionsPage.renderTransactions()
    * */
   render(options){
-
+    if(!options) {
+      return;
+    }
+    Account.get(options.account_id, (error, response) => {
+      if(error) {
+        console.log(error);
+        return;
+      }
+      if(response && response.error) {
+        alert(error);
+        return;
+      }
+      // response.data // {name: 'Бизнес', user_id: '1', id: '3', sum: 1439000}
+      this.renderTitle(response.data.name);
+      // this.renderTransactions();
+      // response.data.account_id = response.data.id;
+      // let accData = { account_id: response.id };
+      Transaction.list({ account_id: response.data.id }, (error, response) => {
+        if(error) {
+          console.log(error);
+          return;
+        }
+        if(response && response.error) {
+          alert(error);
+          return;
+        }
+        this.renderTransactions(response.data);
+        this.lastOptions = options;
+      });
+    });
   }
 
   /**
@@ -70,14 +104,16 @@ class TransactionsPage {
    * Устанавливает заголовок: «Название счёта»
    * */
   clear() {
-
+    // clear page somehow. idk
+    this.renderTransactions([]);
+    this.renderTitle("Название счёта");
   }
 
   /**
    * Устанавливает заголовок в элемент .content-title
    * */
   renderTitle(name){
-
+    document.querySelector(".content-title").textContent = name;
   }
 
   /**
@@ -85,7 +121,7 @@ class TransactionsPage {
    * в формат «10 марта 2019 г. в 03:20»
    * */
   formatDate(date){
-
+    return `${date.slice(5,7)} ${{ "01":"января", "02":"февраля", "03":"марта", "04":"апреля", "05":"мая", "06":"июня", "07":"июля", "08":"августа", "09":"сентября", "10":"октября", "11":"ноября", "12":"декабря" }[date.slice(8,10)]} ${date.slice(0,4)} г. в ${date.slice(11,13)}:${date.slice(14,16)}`;
   }
 
   /**
@@ -93,7 +129,29 @@ class TransactionsPage {
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML(item){
-
+    return `
+      <div class="transaction transaction_${item.type} row">
+        <div class="col-md-7 transaction__details">
+          <div class="transaction__icon">
+              <span class="fa fa-money fa-2x"></span>
+          </div>
+          <div class="transaction__info">
+              <h4 class="transaction__title">${item.name}</h4>
+              <div class="transaction__date">${this.formatDate(item.created_at)}</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="transaction__summ">
+              ${item.sum} <span class="currency">₽</span>
+          </div>
+        </div>
+        <div class="col-md-2 transaction__controls">
+            <button class="btn btn-danger transaction__remove" data-id="${item.id}">
+                <i class="fa fa-trash"></i>  
+            </button>
+        </div>
+    </div>
+    `;
   }
 
   /**
@@ -101,6 +159,11 @@ class TransactionsPage {
    * используя getTransactionHTML
    * */
   renderTransactions(data){
-
+    let content = document.querySelector(".content");
+    content.innerHTML = "";
+    for(let item of data) {
+      content.insertAdjacentHTML("beforeend", this.getTransactionHTML(item));
+      // someElement.insertAdjacentHTML("beforeend", this.getTransactionHTML(item));
+    }
   }
 }
