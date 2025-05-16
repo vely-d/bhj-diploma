@@ -33,7 +33,14 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
-
+    this.element.querySelector(".btn.remove-account").addEventListener("click", (event) => {
+      this.removeAccount();
+    });
+    // this.element.querySelectorAll(".btn.transaction__remove").forEach(btn => {
+    //   btn.addEventListener("click", event => {
+    //     this.removeTransaction(event.target.dataset.id);
+    //   });
+    // });
   }
 
   /**
@@ -46,7 +53,30 @@ class TransactionsPage {
    * для обновления приложения
    * */
   removeAccount() {
-
+    if(!confirm("Вы действительно хотите удалить всю информацию о данном счёте? Вернуть её будет НЕВОЗМОЖНО")) {
+      return;
+    }
+    let currentAcc = document.querySelector(".account.active");
+    if(!currentAcc) {
+      return;
+    }
+    Account.remove({ id: currentAcc.dataset.id }, (error, response) => {
+      if(error) {
+        console.log(error);
+        return;
+      }
+      if(response && response.error) {
+        alert(response.error);
+        return;
+      }
+      if(response && response.success) {
+        this.clear();
+        App.getWidget("accounts").update();
+        App.getForm("createIncome").renderAccountsList();
+        App.getForm("createExpense").renderAccountsList();
+        alert("Счёт успешно удалён");
+      }
+    });
   }
 
   /**
@@ -56,7 +86,24 @@ class TransactionsPage {
    * либо обновляйте текущую страницу (метод update) и виджет со счетами
    * */
   removeTransaction( id ) {
-
+    if(!confirm("Удалить эту транзакцию? Восттановить её будет невозможно")) {
+      return;
+    }
+    Transaction.remove({ id: id }, (error, response) => {
+      if(error) {
+        console.log(error);
+        return;
+      }
+      if(response && response.error) {
+        alert(response.error);
+        return;
+      }
+      if(response && response.success) {
+        // this.element.querySelector(`.transaction:has(.transaction__remove[data-id="${id}"])`).remove(); // fancy solution
+        this.element.querySelector(`.transaction__remove[data-id="${id}"]`).closest(".transaction").remove(); 
+        App.getWidget("accounts").update();
+      }
+    });
   }
 
   /**
@@ -121,8 +168,8 @@ class TransactionsPage {
    * в формат «10 марта 2019 г. в 03:20»
    * */
   formatDate(date){
-    return `${date.slice(5,7)} ${{ "01":"января", "02":"февраля", "03":"марта", "04":"апреля", "05":"мая", "06":"июня", "07":"июля", "08":"августа", "09":"сентября", "10":"октября", "11":"ноября", "12":"декабря" }[date.slice(8,10)]} ${date.slice(0,4)} г. в ${date.slice(11,13)}:${date.slice(14,16)}`;
-  }
+    return `${date.slice(8,10)} ${{ "01":"января", "02":"февраля", "03":"марта", "04":"апреля", "05":"мая", "06":"июня", "07":"июля", "08":"августа", "09":"сентября", "10":"октября", "11":"ноября", "12":"декабря" }[date.slice(5,7)]} ${date.slice(0,4)} г. в ${date.slice(11,13)}:${date.slice(14,16)}`;
+  } 
 
   /**
    * Формирует HTML-код транзакции (дохода или расхода).
@@ -146,7 +193,7 @@ class TransactionsPage {
           </div>
         </div>
         <div class="col-md-2 transaction__controls">
-            <button class="btn btn-danger transaction__remove" data-id="${item.id}">
+            <button class="btn btn-danger transaction__remove" data-id="${item.id}" onclick="App.getPage('transactions').removeTransaction(this.dataset.id);">
                 <i class="fa fa-trash"></i>  
             </button>
         </div>

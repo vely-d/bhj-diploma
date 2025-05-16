@@ -11,6 +11,12 @@
       "email": "demon@demon",
       "password": "demon",
       "id": "exvyh774maoaysgw"
+    },
+    {
+      "name": "a",
+      "email": "a@b",
+      "password": "123",
+      "id": "exvyh93gmap9lgje"
     }
   ],
   "accounts": [
@@ -28,11 +34,6 @@
       "name": "Бизнес",
       "user_id": "1",
       "id": "3"
-    },
-    {
-      "name": "aaa",
-      "user_id": "exvyh774maoaysgw",
-      "id": "exvyhc9wmaocyhhd"
     },
     {
       "name": "some_acc",
@@ -271,15 +272,6 @@
       "sum": 1,
       "user_id": "1",
       "created_at": "2025-05-15T10:05:10.925Z"
-    },
-    {
-      "id": "exvyh8akmap7pc86",
-      "type": "income",
-      "name": "asfasdf",
-      "sum": 456456,
-      "account_id": "exvyhc9wmaocyhhd",
-      "user_id": "exvyh774maoaysgw",
-      "created_at": "2025-05-15T10:13:47.429Z"
     },
     {
       "id": "exvyhal8map80srr",

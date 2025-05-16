@@ -91,7 +91,10 @@ class AccountsWidget {
     let newActiveAcc = element.closest(".account");
     newActiveAcc.classList.add("active");
     App.showPage('transactions', { account_id: newActiveAcc.dataset.id });
-    // element
+
+    // minor feature: updates new transaction forms so that their select elements mathces current account
+    App.getForm('createIncome').element["account_id"].value = newActiveAcc.dataset.id;
+    App.getForm('createExpense').element["account_id"].value = newActiveAcc.dataset.id;
   }
 
   /**
