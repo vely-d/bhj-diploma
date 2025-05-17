@@ -23,15 +23,11 @@ class CreateTransactionForm extends AsyncForm {
         return;
       }
       if(response && response.error) {
-        // alert(response.error);
         console.log(response.error);
         return;
       }
       let select = this.element.querySelector(".accounts-select");
-      select.innerHTML = "";
-      for(let item of response.data) {
-        select.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-      }
+      select.innerHTML = response.data.reduce((sum, currentItem) => sum + `<option value="${currentItem.id}">${currentItem.name}</option>`, "");
     });
   }
 
@@ -42,7 +38,6 @@ class CreateTransactionForm extends AsyncForm {
    * в котором находится форма
    * */
   onSubmit(data) {
-    // data.account_id = this.element.querySelector(`value=["${this.element['account_id'].value}"]`).value;
     data.account_id = this.element["account_id"].value;
     Transaction.create(data, (error, response) => {
       if(error) {

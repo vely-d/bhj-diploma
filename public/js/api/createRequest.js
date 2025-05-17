@@ -7,12 +7,10 @@ const createRequest = (options = {}) => {
     let url = options.url;
     xhr.responseType = options.responseType || 'json';
     xhr.onload = function() {
-        if(this.status >= 400) {
-            options.callback(this.response, null);
-        }
-        if(this.status > 100 && this.status < 300) {
-            options.callback(null, this.response);
-        }
+        options.callback(null, this.response);
+    }
+    xhr.onerror = function() {
+        options.callback(this.response, null);
     }
     switch(options.method) {
         case "GET":
@@ -29,7 +27,6 @@ const createRequest = (options = {}) => {
         case "DELETE":
             let formData = new FormData();
             for(let key in options.data) {
-                // formData.append(key, options.data[key]);
                 formData.append(key, encodeURI(options.data[key]));
             }
             xhr.open(options.method, url);

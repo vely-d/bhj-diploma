@@ -11,20 +11,12 @@ class Entity {
    * (в зависимости от того, что наследуется от Entity)
    * */
   static list(data, callback){
-    // createRequest(
-    //   method: "GET",
-    //   callback: ( err, response ) => {
-
-    //   }
-    // );
     createRequest({
       url: this.URL,
       method: 'GET',
       responseType: 'json',
       data: data,
-      callback: (err, response) => {
-        callback(err, response);
-      }
+      callback: callback
     });
   }
 
@@ -39,9 +31,7 @@ class Entity {
       method: 'PUT',
       responseType: 'json',
       data: data,
-      callback: (err, response) => {
-        callback(err, response);
-      }
+      callback: callback
     });
   }
 
@@ -55,9 +45,7 @@ class Entity {
       method: 'DELETE',
       responseType: 'json',
       data: data,
-      callback: (err, response) => {
-        callback(err, response);
-      }
+      callback: callback
     });
   }
 }

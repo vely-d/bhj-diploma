@@ -36,11 +36,12 @@ class TransactionsPage {
     this.element.querySelector(".btn.remove-account").addEventListener("click", (event) => {
       this.removeAccount();
     });
-    // this.element.querySelectorAll(".btn.transaction__remove").forEach(btn => {
-    //   btn.addEventListener("click", event => {
-    //     this.removeTransaction(event.target.dataset.id);
-    //   });
-    // });
+    this.element.addEventListener("click", (event) => {
+      let currentBtn = event.target.closest(".btn");
+      if(currentBtn && currentBtn.classList.contains("transaction__remove")) {
+        this.removeTransaction(currentBtn.dataset.id);
+      }
+    });
   }
 
   /**
@@ -99,7 +100,6 @@ class TransactionsPage {
         return;
       }
       if(response && response.success) {
-        // this.element.querySelector(`.transaction:has(.transaction__remove[data-id="${id}"])`).remove(); // fancy solution
         this.element.querySelector(`.transaction__remove[data-id="${id}"]`).closest(".transaction").remove(); 
         App.getWidget("accounts").update();
       }
@@ -125,23 +125,19 @@ class TransactionsPage {
         alert(error);
         return;
       }
-      // response.data // {name: 'Бизнес', user_id: '1', id: '3', sum: 1439000}
       this.renderTitle(response.data.name);
-      // this.renderTransactions();
-      // response.data.account_id = response.data.id;
-      // let accData = { account_id: response.id };
-      Transaction.list({ account_id: response.data.id }, (error, response) => {
-        if(error) {
-          console.log(error);
-          return;
-        }
-        if(response && response.error) {
-          alert(error);
-          return;
-        }
-        this.renderTransactions(response.data);
-        this.lastOptions = options;
-      });
+    });
+    Transaction.list({ account_id: options.account_id }, (error, response) => {
+      if(error) {
+        console.log(error);
+        return;
+      }
+      if(response && response.error) {
+        alert(error);
+        return;
+      }
+      this.renderTransactions(response.data);
+      this.lastOptions = options;
     });
   }
 
@@ -151,7 +147,6 @@ class TransactionsPage {
    * Устанавливает заголовок: «Название счёта»
    * */
   clear() {
-    // clear page somehow. idk
     this.renderTransactions([]);
     this.renderTitle("Название счёта");
   }
@@ -193,7 +188,7 @@ class TransactionsPage {
           </div>
         </div>
         <div class="col-md-2 transaction__controls">
-            <button class="btn btn-danger transaction__remove" data-id="${item.id}" onclick="App.getPage('transactions').removeTransaction(this.dataset.id);">
+            <button class="btn btn-danger transaction__remove" data-id="${item.id}">
                 <i class="fa fa-trash"></i>  
             </button>
         </div>
@@ -207,10 +202,6 @@ class TransactionsPage {
    * */
   renderTransactions(data){
     let content = document.querySelector(".content");
-    content.innerHTML = "";
-    for(let item of data) {
-      content.insertAdjacentHTML("beforeend", this.getTransactionHTML(item));
-      // someElement.insertAdjacentHTML("beforeend", this.getTransactionHTML(item));
-    }
+    content.innerHTML = data.reduce((sum, item) => sum + this.getTransactionHTML(item), "");
   }
 }

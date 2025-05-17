@@ -20,7 +20,6 @@ class AccountsWidget {
     this.element = element;
     this.update();
     this.registerEvents();
-    // this.update();
   }
 
   /**
@@ -34,11 +33,11 @@ class AccountsWidget {
     document.querySelector(".create-account").addEventListener("click", function(event) {
       App.getModal("createAccount").open();
     });
-    this.element.querySelectorAll(".account a").forEach(acc => {
-      acc.addEventListener("click", (event) => {
+    this.element.addEventListener("click", (event) => {
+      if(event.target.closest(".account")) {
         this.onSelectAccount(event.target);
-      });
-    })
+      }
+    });
   }
 
   /**
@@ -64,7 +63,6 @@ class AccountsWidget {
         }
         this.clear();
         this.renderItem(response.data);
-        this.registerEvents();
       });
     }
   }
@@ -87,7 +85,9 @@ class AccountsWidget {
    * */
   onSelectAccount( element ) {
     let activeAcc = document.querySelector(".account.active");
-    activeAcc ? activeAcc.classList.remove("active") : 0;
+    if(activeAcc) {
+      activeAcc.classList.remove("active");
+    }
     let newActiveAcc = element.closest(".account");
     newActiveAcc.classList.add("active");
     App.showPage('transactions', { account_id: newActiveAcc.dataset.id });
